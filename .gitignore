@@ -1,5 +1,22 @@
-# Ignore macOS system files
+# macOS system files
 .DS_Store
 
-# Ignore Python virtual environment directory
+# Python virtual environment directory
 .venv
+
+# Python package artifacts
+*.egg-info/
+
+# Python cache directories and files
+__pycache__/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment variables and secrets file
+.env
+
+# Generated data
+data/raw/
+data/processed/
+data/chroma_db_*
