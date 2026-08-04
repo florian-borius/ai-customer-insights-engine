@@ -9,6 +9,7 @@
 
 # Python cache directories and files
 __pycache__/
+.pytest_cache/
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
