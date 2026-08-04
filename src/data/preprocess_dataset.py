@@ -1,19 +1,22 @@
-import pandas as pd
 import re
 
+import pandas as pd
 
-RAW_DATA_INPUT_PATH = "../../data/raw/scraped_reviews_boursobank_pages_154_to_290.csv"
-PROCESSED_DATA_OUTPUT_PATH = "../../data/processed/clean_reviews_test.parquet"
+from config.config import (
+    RAW_DATA_PATH,
+    PROCESSED_DATA_PATH,
+)
 
 
 # ------------------------------
-# SUPPRESSION DES DOUBLONS ET DES VALEURS MANQUANTES, ET RÉINITIALISATION DE L'INDEX
+# SUPPRESSION DES DOUBLONS, DES CHAÎNES VIDES ET DES VALEURS MANQUANTES, ET RÉINITIALISATION DE L'INDEX
 # ------------------------------
-def remove_duplicates_and_na(df: pd.DataFrame) -> pd.DataFrame:
-    """Supprime les doublons et les valeurs manquantes, puis réinitialise l'index."""
+def remove_invalid_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Supprime les doublons, les chaînes vides et les valeurs manquantes, puis réinitialise l'index."""
 
     return (
         df.drop_duplicates()
+          .replace(r"^\s*$", pd.NA, regex=True)
           .dropna()
           .reset_index(drop=True)
     )
@@ -25,14 +28,17 @@ def remove_duplicates_and_na(df: pd.DataFrame) -> pd.DataFrame:
 def remove_unnecessary_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Supprime les colonnes "pseudo" et "total_reviews"."""
 
-    return df.drop(columns=["pseudo", "total_reviews"])
+    return df.drop(columns=["pseudo", "total_reviews"], errors="ignore")
 
 
 # ------------------------------
 # CONVERSION DES DATES ET FEATURE ENGINEERING TEMPOREL
 # ------------------------------
-def process_dates(df: pd.DataFrame) -> pd.DataFrame:
+def process_datetime_features(df: pd.DataFrame) -> pd.DataFrame:
     """Convertit les dates en type DateTime et crée des variables temporelles (year, month, year_month)."""
+
+    # Copie du DataFrame pour éviter de modifier celui passé en argument
+    df = df.copy()
 
     mois_fr_en = {
         'janvier': 'January', 'février': 'February', 'mars': 'March', 'avril': 'April',
@@ -72,42 +78,42 @@ def clean_text(text: str) -> str:
     text = re.sub(r"https?://\S+|www\.\S+", " ", text)
 
     # --- emails ---
-    text = re.sub(r"\S+@\S+", " ", text)
+    text = re.sub(r"\S*@\S+", " ", text)
 
     # --- numéros de téléphone ---
-    text = re.sub(r"\+?\d[\d\s\-]{8,}\d", " ", text)
+    text = re.sub(r"\+?\d[\d\s\-.]{8,}\d", " ", text)
 
-    # --- espaces après les ".", "!" et "?" ---
-    text = re.sub(r"([.!?])(?=\S)", r"\1 ", text)
+    # --- ajout d'un espace après les ".", "!" et "?" s'il n'y en a pas ---
+    text = re.sub(r"([.!?]+)(?![.!?])(?=\S)", r"\1 ", text)
 
-    # --- espaces et caractères d'espacement (\n, \t, ...) ---
+    # --- suppression des espaces en trop et des caractères d'espacement (\n, \t, ...) ---
     text = re.sub(r"\s+", " ", text).strip()
 
     return text
 
 
 # ------------------------------
-# MAIN
+# PIPELINE DE PRÉTRAITEMENT D'UN DATASET
 # ------------------------------
-def main():
-    """Pipeline de prétraitement des données."""
+def main(input_path: str, output_path: str):
+    """Pipeline de prétraitement d'un dataset, avec ajout d'un review_id."""
 
-    df = pd.read_csv(RAW_DATA_INPUT_PATH)
+    df = pd.read_csv(input_path)
 
-    df = remove_duplicates_and_na(df)
+    df["review_id"] = df.index
+
+    df = remove_invalid_rows(df)
     df = remove_unnecessary_columns(df)
-    df = process_dates(df)
-
+    df = process_datetime_features(df)
     df["review"] = df["review"].apply(clean_text)
     df["title"] = df["title"].apply(clean_text)
+    df = remove_invalid_rows(df)
 
-    df.to_parquet(PROCESSED_DATA_OUTPUT_PATH, index=False)
-
-    #print(df.head())
+    df.to_parquet(output_path, index=False)
 
 
 # ------------------------------
 # EXÉCUTION
 # ------------------------------
 if __name__ == "__main__":
-    main()
+    main(input_path=RAW_DATA_PATH, output_path=PROCESSED_DATA_PATH)
