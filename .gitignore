@@ -20,4 +20,4 @@ __pycache__/
 # Generated data
 data/raw/
 data/processed/
-data/chroma_db_*
+data/chroma_db*
