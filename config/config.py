@@ -20,7 +20,8 @@ PROCESSED_DATA_PATH = PROJECT_ROOT / "data/processed/processed_reviews.parquet"
 # DATA PREPROCESSING (RAG)
 # ------------------------------
 
-REVIEW_MAX_LENGTH = 4000
+REVIEW_MIN_LENGTH = None
+REVIEW_MAX_LENGTH = None
 
 
 # ------------------------------

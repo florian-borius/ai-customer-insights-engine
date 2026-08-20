@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config.config import (
+    REVIEW_MIN_LENGTH,
     REVIEW_MAX_LENGTH,
     SEPARATORS,
     CHUNK_SIZE,
@@ -13,15 +14,22 @@ from config.config import (
 
 
 # ------------------------------
-# FILTRAGE DES AVIS CLIENTS AU-DELÀ D'UNE CERTAINE LONGUEUR
+# FILTRAGE DES AVIS CLIENTS SELON UNE LONGUEUR MINIMALE ET/OU MAXIMALE
 # ------------------------------
-def filter_long_reviews(
+def filter_reviews(
     df: pd.DataFrame,
-    review_max_length: int,
+    review_min_length: int | None = None,
+    review_max_length: int | None = None,
 ) -> pd.DataFrame:
-    """Filtre les avis clients au-delà d'une certaine longueur."""
+    """Filtre les avis clients selon une longueur minimale et/ou maximale."""
 
-    return df[df["review"].str.len() <= review_max_length]
+    if review_min_length is not None:
+        df = df[df["review"].str.len() >= review_min_length]
+
+    if review_max_length is not None:
+        df = df[df["review"].str.len() <= review_max_length]
+
+    return df
 
 
 # ----------------------------
@@ -88,8 +96,9 @@ def prepare_chunked_documents(input_path: Path | str) -> list[Document]:
 
     dataset_name = Path(input_path).stem
 
-    filtered_df = filter_long_reviews(
+    filtered_df = filter_reviews(
         df=df,
+        review_min_length=REVIEW_MIN_LENGTH,
         review_max_length=REVIEW_MAX_LENGTH,
     )
 
