@@ -71,5 +71,9 @@ RERANKER_TOP_N = 5
 # CHAIN (RAG)
 # ------------------------------
 
-LLM_MODEL = "gpt-4o-mini"   # "gpt-4.1-mini"
+LLM_MODEL = "gpt-4o-mini"
 MAX_COMPLETION_TOKENS = 300
+
+# Tarifs gpt-4o-mini relevés le 24/08/2026 (USD / 1M de tokens)
+INPUT_TOKEN_PRICE = 0.15 / 1_000_000
+OUTPUT_TOKEN_PRICE = 0.60 / 1_000_000
