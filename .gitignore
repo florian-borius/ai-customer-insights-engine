@@ -2,22 +2,23 @@
 .DS_Store
 
 # Python virtual environment directory
-.venv
+.venv/
 
 # Python package artifacts
 *.egg-info/
 
-# Python cache directories and files
+# Python and testing cache
 __pycache__/
+*.pyc
 .pytest_cache/
 
-# Notebooks checkpoints
+# Jupyter Notebooks checkpoints
 .ipynb_checkpoints/
 
-# Environment variables and secrets file
+# Environment variables and secrets
 .env
 
 # Generated data
 data/raw/
 data/processed/
-data/chroma_db*
+data/chroma_db_*
