@@ -2,17 +2,18 @@
 name = "ai-customer-insights-engine"
 version = "0.1.0"
 description = "RAG application for customer reviews analysis"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 
 dependencies = [
     "python-dotenv",
-    "pandas",
     "langchain-core",
-    "langchain-huggingface",
-    "langchain-openai",
-    "langchain-text-splitters",
     "langchain-chroma",
-    "streamlit"
+    "chromadb",
+    "langchain-classic",
+    "langchain-huggingface",
+    "sentence-transformers",
+    "langchain-openai",
+    "streamlit",
 ]
 
 [tool.setuptools.packages.find]
