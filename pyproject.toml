@@ -20,5 +20,8 @@ dependencies = [
     "streamlit==1.59.2",
 ]
 
+[tool.poetry]
+package-mode = false
+
 [tool.setuptools.packages.find]
 where = ["."]
