@@ -1,8 +1,9 @@
 # macOS system files
 .DS_Store
 
-# Python virtual environment directory
+# Python virtual environment directories
 .venv/
+.venv_deploy/
 
 # Python package artifacts
 *.egg-info/
@@ -18,7 +19,9 @@ __pycache__/
 # Environment variables and secrets
 .env
 
-# Generated data
+# Dataset files
 data/raw/
 data/processed/
+
+# Test vector stores
 data/chroma_db_*

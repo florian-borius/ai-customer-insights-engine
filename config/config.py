@@ -56,7 +56,7 @@ COLLECTION_NAME = "bank_customer_reviews"
 # ------------------------------
 
 SEARCH_TYPE = "similarity"
-RETRIEVER_K = 20
+RETRIEVER_K = 5
 
 
 # ------------------------------

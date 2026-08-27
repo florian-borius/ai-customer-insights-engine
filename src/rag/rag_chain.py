@@ -11,6 +11,19 @@ if OPENAI_API_KEY is None:
 
 
 # ------------------------------
+# EXTRACTION DU CONTENU POUR LE LLM
+# ------------------------------
+
+def extract_content(documents):
+    """Extrait le contenu des documents pour le LLM."""
+
+    return "\n\n".join(
+        f'"{doc.page_content}"'
+        for doc in documents
+    )
+
+
+# ------------------------------
 # CRÉATION D'UNE CHAÎNE RAG
 # ------------------------------
 def create_rag_chain(
@@ -18,7 +31,7 @@ def create_rag_chain(
     max_completion_tokens: int,
     retriever: BaseRetriever,
 ) -> Runnable[dict, dict]:
-    """Crée une chaîne RAG à partir d'un llm et d'un retriever."""
+    """Crée une chaîne RAG à partir d'un LLM et d'un retriever."""
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -56,7 +69,14 @@ def create_rag_chain(
             "context": retriever,
         }
         | RunnablePassthrough.assign(
-            answer = prompt | llm
+            answer=(
+                {
+                    "question": lambda x: x["question"],
+                    "context": lambda x: extract_content(x["context"]),
+                }
+                | prompt
+                | llm
+            )
         )
     )
 
