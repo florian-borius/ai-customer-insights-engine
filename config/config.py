@@ -77,3 +77,12 @@ MAX_COMPLETION_TOKENS = 300
 # Tarifs gpt-4o-mini relevés le 24/08/2026 (USD / 1M de tokens)
 INPUT_TOKEN_PRICE = 0.15 / 1_000_000
 OUTPUT_TOKEN_PRICE = 0.60 / 1_000_000
+
+
+# ------------------------------
+# SECURITY
+# ------------------------------
+
+MAX_REQUESTS_PER_MINUTE = 3
+MAX_REQUESTS_PER_SESSION = 5
+BLOCK_DURATION = 60  # secondes

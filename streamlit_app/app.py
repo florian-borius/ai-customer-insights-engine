@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from collections import deque
 from datetime import datetime
 
 import streamlit as st
@@ -9,6 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.security.request_guard import check_request_limit
 from src.rag.retriever import create_retriever
 from src.rag.rag_chain import create_rag_chain
 
@@ -28,6 +30,20 @@ st.set_page_config(
     page_icon="🔎",
     layout="centered",
 )
+
+
+# ------------------------------
+# INITIALISATION DE LA PROTECTION
+# ------------------------------
+
+if "request_times" not in st.session_state:
+    st.session_state.request_times = deque()
+
+if "request_count" not in st.session_state:
+    st.session_state.request_count = 0
+
+if "blocked_until" not in st.session_state:
+    st.session_state.blocked_until = 0
 
 
 # ------------------------------
@@ -329,161 +345,184 @@ if analyze:
 
     else:
 
-        # Loader pendant le traitement
-        with st.spinner(
-            "Analyse des avis clients en cours..."
-        ):
-
-            response = rag_chain.invoke(question)
-
-
         # ------------------------------
-        # RÉPONSE
+        # CONTRÔLE DES REQUÊTES
         # ------------------------------
 
-        st.markdown(
-            '<div class="section-title">Réponse</div>',
-            unsafe_allow_html=True,
+        allowed, error_message, request_count, blocked_until = (
+            check_request_limit(
+                st.session_state.request_times,
+                st.session_state.request_count,
+                st.session_state.blocked_until,
+            )
         )
 
-        st.markdown(
-            f"""
-            <div class="answer-box">
-                {response["answer"].content}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.session_state.request_count = request_count
+        st.session_state.blocked_until = blocked_until
 
 
-        # ------------------------------
-        # CONTEXTES
-        # ------------------------------
+        if not allowed:
 
-        st.markdown(
-            '<div class="section-title">Contextes utilisés</div>',
-            unsafe_allow_html=True,
-        )
+            st.warning(error_message)
 
 
-        for i, doc in enumerate(
-            response["context"],
-            start=1,
-        ):
+        else:
 
-            with st.expander(
-                f"Contexte {i}",
-                expanded=False,
+            # Loader pendant le traitement
+            with st.spinner(
+                "Analyse des avis clients en cours..."
             ):
 
-                # ------------------------------
-                # CONTENU DU CONTEXTE
-                # ------------------------------
-
-                st.markdown(
-                    f'<div class="context-content">'
-                    f'"{doc.page_content}"'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
+                response = rag_chain.invoke(question)
 
 
-                # ------------------------------
-                # SÉPARATION
-                # ------------------------------
+            # ------------------------------
+            # RÉPONSE
+            # ------------------------------
 
-                st.markdown(
-                    '<div class="metadata-separator"></div>',
-                    unsafe_allow_html=True,
-                )
+            st.markdown(
+                '<div class="section-title">Réponse</div>',
+                unsafe_allow_html=True,
+            )
 
-
-                # ------------------------------
-                # INFORMATIONS SUR L'AVIS
-                # ------------------------------
-
-                st.markdown(
-                    '<div class="metadata-section-title">'
-                    "Informations sur l'avis :"
-                    "</div>",
-                    unsafe_allow_html=True,
-                )
+            st.markdown(
+                f"""
+                <div class="answer-box">
+                    {response["answer"].content}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
 
-                # Nom de la banque
-                bank_names = {
-                    "hellobank": "Hello bank!",
-                    "fortuneo": "Fortuneo",
-                    "monabanq": "Monabanq",
-                    "boursobank": "BoursoBank",
-                }
+            # ------------------------------
+            # CONTEXTES
+            # ------------------------------
 
-                bank = doc.metadata.get(
-                    "bank",
-                    "N/A",
-                )
-
-                bank_display = bank_names.get(
-                    bank,
-                    bank,
-                )
+            st.markdown(
+                '<div class="section-title">Contextes utilisés</div>',
+                unsafe_allow_html=True,
+            )
 
 
-                # Date de publication
-                publication_date = doc.metadata.get(
-                    "publication_date"
-                )
+            for i, doc in enumerate(
+                response["context"],
+                start=1,
+            ):
 
-                if publication_date:
+                with st.expander(
+                    f"Contexte {i}",
+                    expanded=False,
+                ):
 
-                    publication_date = datetime.fromisoformat(
-                        publication_date
-                    ).strftime("%d/%m/%Y")
+                    # ------------------------------
+                    # CONTENU DU CONTEXTE
+                    # ------------------------------
 
-                else:
-
-                    publication_date = "N/A"
-
-
-                # Informations générales
-                st.markdown(
-                    f"""
-<div class="metadata-list">
-
-- **Titre :** {doc.metadata.get("title", "N/A")}
-- **Note :** {doc.metadata.get("rating", "N/A")}/5
-- **Date de publication :** {publication_date}
-- **Banque :** {bank_display}
-
-</div>
-""",
-                    unsafe_allow_html=True,
-                )
+                    st.markdown(
+                        f'<div class="context-content">'
+                        f'"{doc.page_content}"'
+                        f'</div>',
+                        unsafe_allow_html=True,
+                    )
 
 
-                # ------------------------------
-                # INFORMATIONS TECHNIQUES
-                # ------------------------------
+                    # ------------------------------
+                    # SÉPARATION
+                    # ------------------------------
 
-                st.markdown(
-                    '<div class="metadata-section-title technical">'
-                    "Informations techniques :"
-                    "</div>",
-                    unsafe_allow_html=True,
-                )
+                    st.markdown(
+                        '<div class="metadata-separator"></div>',
+                        unsafe_allow_html=True,
+                    )
 
 
-                st.markdown(
-                    f"""
-<div class="metadata-list technical-metadata">
+                    # ------------------------------
+                    # INFORMATIONS SUR L'AVIS
+                    # ------------------------------
 
-- **review_id :** {doc.metadata.get("review_id", "N/A")}
-- **dataset :** {doc.metadata.get("dataset", "N/A")}
+                    st.markdown(
+                        '<div class="metadata-section-title">'
+                        "Informations sur l'avis :"
+                        "</div>",
+                        unsafe_allow_html=True,
+                    )
 
-</div>
-""",
-                    unsafe_allow_html=True,
-                )
+
+                    # Nom de la banque
+                    bank_names = {
+                        "hellobank": "Hello bank!",
+                        "fortuneo": "Fortuneo",
+                        "monabanq": "Monabanq",
+                        "boursobank": "BoursoBank",
+                    }
+
+                    bank = doc.metadata.get(
+                        "bank",
+                        "N/A",
+                    )
+
+                    bank_display = bank_names.get(
+                        bank,
+                        bank,
+                    )
+
+
+                    # Date de publication
+                    publication_date = doc.metadata.get(
+                        "publication_date"
+                    )
+
+                    if publication_date:
+
+                        publication_date = datetime.fromisoformat(
+                            publication_date
+                        ).strftime("%d/%m/%Y")
+
+                    else:
+
+                        publication_date = "N/A"
+
+
+                    # Informations générales
+                    st.markdown(
+                        f"""
+                    <div class="metadata-list">
+
+                    - **Titre :** {doc.metadata.get("title", "N/A")}
+                    - **Note :** {doc.metadata.get("rating", "N/A")}/5
+                    - **Date de publication :** {publication_date}
+                    - **Banque :** {bank_display}
+
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
+                    )
+
+
+                    # ------------------------------
+                    # INFORMATIONS TECHNIQUES
+                    # ------------------------------
+
+                    st.markdown(
+                        '<div class="metadata-section-title technical">'
+                        "Informations techniques :"
+                        "</div>",
+                        unsafe_allow_html=True,
+                    )
+
+
+                    st.markdown(
+                        f"""
+                    <div class="metadata-list technical-metadata">
+
+                    - **review_id :** {doc.metadata.get("review_id", "N/A")}
+                    - **dataset :** {doc.metadata.get("dataset", "N/A")}
+
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
+                    )
 
 
 # ------------------------------
