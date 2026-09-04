@@ -54,23 +54,40 @@ st.markdown(
     """
     <style>
 
+
     /* --------------------------------
-       TITRE PRINCIPAL
+       TITRE DE L'APPLICATION
     -------------------------------- */
 
     h1 {
-        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        text-align: center;
     }
 
 
     /* --------------------------------
-       LIBELLÉ DU CHAMP DE QUESTION
+       DESCRIPTION DE L'APPLICATION
+    -------------------------------- */
+
+    .app-description {
+        font-size: 1rem;
+        font-weight: 300;
+        line-height: 1.5;
+        color: #4b5563;
+        text-align: center;
+        max-width: 85%;
+        margin: 0 auto 2rem;
+    }
+
+
+    /* --------------------------------
+       LIBELLÉ DU CHAMP DE SAISIE
     -------------------------------- */
 
     .question-label {
         font-size: 1rem;
         font-weight: 600;
-        margin-bottom: 0.45rem;
+        margin-bottom: 0.5rem;
     }
 
 
@@ -78,24 +95,14 @@ st.markdown(
        CHAMP DE SAISIE
     -------------------------------- */
 
-    div[data-baseweb="input"] {
-        border: 1px solid #d1d5db !important;
-        border-radius: 8px !important;
-        box-shadow: none !important;
-        transition: border-color 0.2s ease,
-                    box-shadow 0.2s ease;
+    div[data-testid="InputInstructions"] {
+        font-size: 0;
     }
 
-    div[data-baseweb="input"]:focus-within {
-        border: 1px solid #9ca3af !important;
-        box-shadow: 0 0 0 1px #9ca3af !important;
+    div[data-testid="InputInstructions"]::after {
+        content: "Appuyez sur Entrée pour valider";
+        font-size: 0.7rem;
     }
-
-    div[data-baseweb="input"] > div {
-        border: none !important;
-        box-shadow: none !important;
-    }
-
 
     /* --------------------------------
        FORMULAIRE
@@ -108,43 +115,31 @@ st.markdown(
 
 
     /* --------------------------------
-       BOUTON ANALYSER
-    -------------------------------- */
-
-    div.stFormSubmitButton > button {
-        height: 42px;
-        border-radius: 8px;
-        font-weight: 600;
-        margin-top: 0;
-    }
-
-
-    /* --------------------------------
        EXEMPLES DE QUESTIONS
     -------------------------------- */
 
     .examples {
-        font-size: 0.8rem;
-        color: #9ca3af;
-        margin-top: 0.15rem;
+        font-size: 0.875rem;
         line-height: 1.5;
+        color: #9ca3af;
+        margin-bottom: 1rem;
     }
 
     .examples strong {
-        color: #6b7280;
         font-weight: 600;
+        color: #6b7280;
     }
 
 
     /* --------------------------------
-       TITRES DE SECTIONS
+       TITRES DES SECTIONS
     -------------------------------- */
 
     .section-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
-        margin-top: 1.2rem;
-        margin-bottom: 0.6rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
 
 
@@ -153,14 +148,12 @@ st.markdown(
     -------------------------------- */
 
     .answer-box {
-        border: 1px solid #e5e7eb;
+        font-size: 1rem;
+        line-height: 1.5;
+        padding: 1rem;
+        border: 1px solid #D1D5DB;
         border-radius: 8px;
-        padding: 0.9rem 1rem;
-        margin-top: 0.6rem;
-        margin-bottom: 1.2rem;
-        background-color: #fafafa;
-        font-size: 0.95rem;
-        line-height: 1.55;
+        margin-bottom: 1rem;
     }
 
 
@@ -169,44 +162,42 @@ st.markdown(
     -------------------------------- */
 
     .context-content {
-        font-size: 0.95rem;
+        font-size: 1rem;
         line-height: 1.5;
-        margin-bottom: 0.7rem;
+        margin-bottom: 1rem;
     }
 
 
     /* --------------------------------
-       SÉPARATION MÉTADONNÉES
+       SÉPARATEUR HORIZONTAL
     -------------------------------- */
 
     .metadata-separator {
         border-top: 1px solid #e5e7eb;
-        margin: 0.4rem 0 0.8rem 0;
+        margin: 0.4rem 0 0.875rem 0;
     }
 
 
     /* --------------------------------
-       TITRES DES BLOCS DE MÉTADONNÉES
+       TITRES DES SOUS-SECTIONS DES MÉTADONNÉES
     -------------------------------- */
 
     .metadata-section-title {
-        font-size: 0.8rem;
+        font-size: 0.875rem;
         font-weight: 600;
         text-decoration: underline;
         color: #6b7280;
         margin-top: 0.7rem;
-        margin-bottom: 0.3rem;
     }
 
 
     /* --------------------------------
-       LISTES DE MÉTADONNÉES
+       LISTES DES MÉTADONNÉES
     -------------------------------- */
 
     .metadata-list {
-        font-size: 0.8rem;
-        line-height: 1.45;
-        margin-bottom: 0.7rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
         color: #6b7280;
     }
 
@@ -224,6 +215,56 @@ st.markdown(
         color: #9ca3af;
         margin-top: 0.9rem;
     }
+
+
+    /* --------------------------------
+       À SAVOIR
+    -------------------------------- */
+
+    .info-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #eef4f8;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .info-icon {
+        flex-shrink: 0;
+        font-size: 1.1rem;
+    }
+
+    .info-content {
+        flex: 1;
+        color: #6f8494;
+    }
+
+
+    /* --------------------------------
+    FOOTER
+    -------------------------------- */
+
+    .app-footer {
+        font-size: 0.8rem;
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem 0;
+        color: #9ca3af;
+    }
+
+    .app-footer a {
+        color: #6b7280;
+        text-decoration: none;
+    }
+
+    .app-footer a:hover {
+        text-decoration: underline;
+    }
+
 
     </style>
     """,
@@ -257,22 +298,37 @@ rag_chain = initialize_rag_chain()
 
 
 # ------------------------------
-# INTERFACE
+# TITRE + DESCRIPTION DE L'APPLICATION + LIBELLÉ DU CHAMP DE SAISIE
 # ------------------------------
 
 st.title("AI Customer Insights Engine")
 
 
 st.markdown(
-    '<div class="question-label">'
-    "Posez une question sur les avis clients :"
-    "</div>",
+    """
+    <div class="app-description">
+        Cette application d’intelligence artificielle permet d’interroger en langage naturel
+        une base de plusieurs dizaines de milliers d’avis clients issus du secteur bancaire.<br>
+        Elle s’appuie sur une architecture <strong>RAG (Retrieval-Augmented Generation)</strong>
+        pour rechercher les avis les plus pertinents et générer des réponses fondées sur les données disponibles.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+st.markdown(
+    """
+    <div class="question-label">
+        Posez une question sur les avis clients :
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
 
 # ------------------------------
-# CHAMP DE QUESTION + BOUTON
+# CHAMP DE SAISIE + BOUTON
 # ------------------------------
 
 with st.form("rag_form"):
@@ -304,7 +360,7 @@ st.markdown(
         <strong><u>Exemples :</u></strong>
         Quels types de problèmes rencontrent les clients avec le service client ?
         • Comment les clients décrivent-ils leur expérience lors de l'ouverture d'un compte ?
-        • Quels sont les points forts des banques selon les clients ?
+        • Quels sont les éléments de satisfaction des clients concernant les frais bancaires ?
     </div>
     """,
     unsafe_allow_html=True,
@@ -314,12 +370,6 @@ st.markdown(
 # ------------------------------
 # LANCEMENT DE L'ANALYSE
 # ------------------------------
-
-st.markdown(
-    '<div style="margin-top: 1rem;"></div>',
-    unsafe_allow_html=True,
-)
-
 
 if analyze:
 
@@ -381,7 +431,7 @@ if analyze:
             # ------------------------------
 
             st.markdown(
-                '<div class="section-title">Réponse</div>',
+                '<div class="section-title">Réponse :</div>',
                 unsafe_allow_html=True,
             )
 
@@ -396,11 +446,11 @@ if analyze:
 
 
             # ------------------------------
-            # CONTEXTES
+            # CONTEXTES UTILISÉS
             # ------------------------------
 
             st.markdown(
-                '<div class="section-title">Contextes utilisés</div>',
+                '<div class="section-title">Contextes utilisés :</div>',
                 unsafe_allow_html=True,
             )
 
@@ -415,6 +465,7 @@ if analyze:
                     expanded=False,
                 ):
 
+
                     # ------------------------------
                     # CONTENU DU CONTEXTE
                     # ------------------------------
@@ -428,7 +479,7 @@ if analyze:
 
 
                     # ------------------------------
-                    # SÉPARATION
+                    # SÉPARATEUR HORIZONTAL
                     # ------------------------------
 
                     st.markdown(
@@ -492,7 +543,7 @@ if analyze:
                     - **Titre :** {doc.metadata.get("title", "N/A")}
                     - **Note :** {doc.metadata.get("rating", "N/A")}/5
                     - **Date de publication :** {publication_date}
-                    - **Banque :** {bank_display}
+                    <!-- - **Banque :** {bank_display} -->
 
                     </div>
                     """,
@@ -523,6 +574,46 @@ if analyze:
                     """,
                         unsafe_allow_html=True,
                     )
+
+
+# ------------------------------
+# À SAVOIR
+# ------------------------------
+
+st.markdown(
+    """
+    <div class="info-message">
+        <div class="info-icon">💡</div>
+        <div class="info-content">
+            <strong>À savoir :</strong> Les réponses sont générées à partir des avis clients récupérés et peuvent comporter des erreurs ou des inexactitudes.
+            Dans sa version actuelle, le système ne permet pas d’établir des classements, comparaisons ou statistiques sur l’ensemble des avis.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ------------------------------
+# FOOTER
+# ------------------------------
+
+st.markdown(
+    """
+    <div class="app-footer">
+        <a href="https://www.linkedin.com/in/florian-borius/"
+           target="_blank">
+            Florian BORIUS
+        </a>
+        &nbsp; • &nbsp;
+        <a href="https://github.com/florian-borius/ai-customer-insights-engine"
+           target="_blank">
+            Consulter le code source sur GitHub
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # ------------------------------

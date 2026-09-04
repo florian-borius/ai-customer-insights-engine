@@ -25,11 +25,11 @@ def check_request_limit(
     # Vérification d'un éventuel blocage temporaire
     if now < blocked_until:
 
-    #    remaining = int(blocked_until - now) + 1
+        remaining = int(blocked_until - now) + 1
 
         return (
             False,
-            "Trop de requêtes rapprochées. Veuillez patienter avant de continuer.",
+            f"Trop de requêtes rapprochées. Veuillez patienter pendant {remaining} secondes.",
             request_count,
             blocked_until,
         )

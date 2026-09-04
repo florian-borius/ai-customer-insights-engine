@@ -39,8 +39,7 @@ CHUNK_OVERLAP = 100
 
 HUGGINGFACE_EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
-OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+#OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 # ------------------------------
@@ -71,6 +70,7 @@ RERANKER_TOP_N = 5
 # CHAIN (RAG)
 # ------------------------------
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LLM_MODEL = "gpt-4o-mini"
 MAX_COMPLETION_TOKENS = 300
 
@@ -83,6 +83,6 @@ OUTPUT_TOKEN_PRICE = 0.60 / 1_000_000
 # SECURITY
 # ------------------------------
 
-MAX_REQUESTS_PER_MINUTE = 10
+MAX_REQUESTS_PER_MINUTE = 8
 MAX_REQUESTS_PER_SESSION = 20
 BLOCK_DURATION = 60  # secondes

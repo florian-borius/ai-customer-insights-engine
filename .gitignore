@@ -23,5 +23,8 @@ __pycache__/
 data/raw/
 data/processed/
 
+# Local evaluation files
+data/evaluation/evaluation_questions_sauvegarde.json
+
 # Test vector stores
 data/chroma_db_*
