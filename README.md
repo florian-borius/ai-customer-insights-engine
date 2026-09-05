@@ -1,6 +1,6 @@
 # AI Customer Insights Engine
 
-**AI Customer Insights Engine** est une application d'intelligence artificielle permettant d'interroger en langage naturel une base de plusieurs dizaines de milliers d'avis clients.
+**AI Customer Insights Engine** est une application d'intelligence artificielle permettant d'interroger en langage naturel une base de plusieurs dizaines de milliers d'avis clients pour en extraire des insights.
 
 Le projet repose sur une architecture **Retrieval-Augmented Generation (RAG)** : les avis les plus pertinents sont d'abord recherchés dans une base vectorielle, puis transmis à un modèle de langage afin de générer une réponse fondée sur les données disponibles.
 
@@ -28,7 +28,7 @@ Les avis sont traités comme un **corpus commun**, sans distinction entre les ba
 
 ## 🏗️ Architecture
 
-Le projet repose sur deux pipelines distincts : un **pipeline d'indexation**, exécuté en amont pour construire la base vectorielle, et un **pipeline de recherche et génération**, exécuté à chaque question utilisateur.
+Le projet est conçu de manière modulaire et repose sur deux pipelines distincts : un **pipeline d’indexation**, exécuté en amont pour construire la base vectorielle, et un **pipeline de recherche et génération**, exécuté à chaque question utilisateur.
 
 ### Pipeline d'indexation
 
@@ -81,11 +81,25 @@ Deux configurations de recherche sémantique ont été évaluées (Cf. section "
 | Base vectorielle  | Chroma                                  |
 | Recherche         | Similarity Search                       |
 | Reranker          | `BAAI/bge-reranker-v2-m3` *(évalué)*    |
-| Modèle de langage | GPT-4.1-mini                            |
-| Évaluation RAG.   | Ragas                                   |
+| Modèle de langage | GPT-4o-mini                             |
+| Évaluation RAG    | Ragas                                   |
 | Interface         | Streamlit                               |
 
-Le projet est conçu de manière modulaire afin de séparer les différentes étapes du pipeline d'indexation et du pipeline de recherche et génération.
+## 🚀 Déploiement
+
+L'application est déployée sur **Streamlit Community Cloud** et accessible en ligne depuis le lien présenté en introduction.
+
+## 💬 Exemples d'utilisation
+
+L'application permet d'interroger la base d'avis clients en langage naturel.
+
+Quelques exemples de questions :
+
+* *Quels types de problèmes rencontrent les clients avec le service client ?*
+* *Comment les clients décrivent-ils leur expérience lors de l'ouverture d'un compte ?*
+* *Quels sont les éléments de satisfaction des clients concernant les frais bancaires ?*
+
+Pour chaque question, le système recherche les avis les plus pertinents, puis utilise ces informations pour générer une réponse contextualisée.
 
 ## 📏 Évaluation et résultats
 
@@ -116,15 +130,19 @@ L'évaluation a reposé sur une approche **LLM-as-a-Judge**, mise en œuvre avec
 |---|---:|---:|---:|
 |  |  |  |  |
 | **Context Relevance** | **0,94** | **0,97** | **+0,04** |
-| Temps moyen | 0,32 s | 9,25 s | +8,93 s |
+| Temps moyen de retrieval | 0,32 s | 9,25 s | +8,93 s |
 |  |  |  |  |
 | **Faithfulness** | **0,75** | **0,87** | **+0,12** |
-| Temps moyen | 3,44 s | 10,63 s | +7,20 s |
-| Coût moyen | 0,000205 $ | 0,000247 $ | +0,000042 $ |
+| Temps moyen du RAG | 3,44 s | 10,63 s | +7,20 s |
+| Coût moyen de génération | 0,000205 $ | 0,000247 $ | +0,000042 $ |
 |  |  |  |  |
 | **Answer Relevancy** | **0,90** | **0,97** | **+0,07** |
-| Temps moyen | 2,65 s | 19,82 s | +17,17 s |
-| Coût moyen | 0,000201 $ | 0,000247 $ | +0,000046 $ |
+| Temps moyen du RAG | 2,65 s | 19,82 s | +17,17 s |
+| Coût moyen de génération | 0,000201 $ | 0,000247 $ | +0,000046 $ |
+
+> *Les temps correspondent uniquement à l'exécution du retrieval ou du RAG et excluent le temps de calcul des métriques par le LLM-as-a-Judge.*
+>
+> *À noter : le temps d'exécution du RAG peut varier sensiblement d'une évaluation à l'autre, notamment en raison de la variabilité des temps de réponse de l'API du LLM.*
 
 ### Interprétation
 
@@ -135,20 +153,6 @@ En contrepartie, le reranking entraîne une **augmentation importante du temps d
 Le reranking permet donc d'obtenir de meilleurs résultats en termes de qualité, mais au prix d'une latence sensiblement plus élevée et d'un léger surcoût.
 
 Pour l'application déployée, la configuration **Retriever seul** a finalement été retenue, offrant le meilleur compromis entre **qualité, temps d'exécution et coût**.
-
-## 💬 Exemples d'utilisation
-
-L'application permet d'interroger la base d'avis clients en langage naturel.
-
-Quelques exemples de questions :
-
-* *Quels types de problèmes rencontrent les clients avec le service client ?*
-* *Comment les clients décrivent-ils leur expérience lors de l'ouverture d'un compte ?*
-* *Quels sont les éléments de satisfaction des clients concernant les frais bancaires ?*
-
-Pour chaque question, le système recherche les avis les plus pertinents, puis utilise ces informations pour générer une réponse contextualisée.
-
----
 
 ## 📁 Structure du projet
 
@@ -208,8 +212,6 @@ AI-Customer-Insights-Engine/
 
 Le projet sépare les différentes étapes du pipeline afin de faciliter sa compréhension, sa maintenance et son évolution.
 
----
-
 ## ⚙️ Installation et lancement
 
 ### Prérequis
@@ -242,8 +244,6 @@ streamlit run streamlit_app/app.py
 ```
 
 L'application permet alors d'interroger la base d'avis clients directement depuis une interface web.
-
----
 
 ## 🔮 Axes d'amélioration
 
@@ -295,10 +295,8 @@ Plusieurs axes d'amélioration pourraient être explorés pour le faire évoluer
 * Permettre de préciser, en complément de la question, une période temporelle afin de cibler les avis correspondants.
 * Développer un Agent IA doté de différents outils permettant notamment d'effectuer des classements, des comparaisons ou des analyses statistiques sur le corpus d'avis.
 
----
-
 ## 👤 Auteur
 
 **Florian BORIUS**
 
-Projet réalisé dans le cadre de mon portfolio Data & AI, avec pour objectif d'explorer la conception, l'évaluation et le déploiement d'une application RAG de bout en bout.
+Projet réalisé dans le cadre de mon portfolio Data & AI, avec pour objectif d'explorer la conception, le développement, l'évaluation et le déploiement d'une application RAG de bout en bout.
