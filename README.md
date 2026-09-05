@@ -152,7 +152,7 @@ En contrepartie, le reranking entraîne une **augmentation importante du temps d
 
 Le reranking permet donc d'obtenir de meilleurs résultats en termes de qualité, mais au prix d'une latence sensiblement plus élevée et d'un léger surcoût.
 
-Pour l'application déployée, la configuration **Retriever seul** a finalement été retenue, offrant le meilleur compromis entre **qualité, temps d'exécution et coût**.
+Pour l'application déployée, la configuration **Retriever seul** a finalement été retenue, offrant un bon compromis entre **qualité et temps d’exécution**.
 
 ## 📁 Structure du projet
 
