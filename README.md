@@ -62,12 +62,14 @@ Recherche sémantique
      ↓
 Contextes pertinents
      ↓
+Prompting
+     ↓  
 Modèle de langage
      ↓
 Réponse générée
 ```
 
-À chaque question, celle-ci est transformée en représentation vectorielle (*embedding*) afin de rechercher dans Chroma les chunks les plus similaires. Les contextes récupérés sont ensuite transmis au modèle de langage, qui génère une réponse fondée sur les informations fournies.
+À chaque question, celle-ci est transformée en représentation vectorielle (*embedding*) afin de rechercher dans Chroma les chunks les plus similaires. Les contextes récupérés sont ensuite intégrés à un prompt structuré avec la question utilisateur, puis transmis au modèle de langage, qui génère une réponse fondée sur les informations fournies.
 
 Deux configurations de recherche sémantique ont été évaluées (Cf. section "Évaluation et résultats").
 
@@ -140,7 +142,7 @@ L'évaluation a reposé sur une approche **LLM-as-a-Judge**, mise en œuvre avec
 | Temps moyen du RAG | 2,65 s | 19,82 s | +17,17 s |
 | Coût moyen de génération | 0,000201 $ | 0,000247 $ | +0,000046 $ |
 
-> *Les temps correspondent uniquement à l'exécution du retrieval ou du RAG et excluent le temps de calcul des métriques par le LLM-as-a-Judge.*
+> *Les temps et les coûts correspondent uniquement à l'exécution du retrieval ou du RAG et excluent le temps de calcul des métriques par le LLM-as-a-Judge ainsi que le coût associé à leur calcul.*
 >
 > *À noter : le temps d'exécution du RAG peut varier sensiblement d'une évaluation à l'autre, notamment en raison de la variabilité des temps de réponse de l'API du LLM.*
 
@@ -273,6 +275,7 @@ Plusieurs axes d'amélioration pourraient être explorés pour le faire évoluer
 
 ### Génération
 
+* Expérimenter différentes stratégies de prompt engineering.
 * Tester différents modèles de langage pour la génération des réponses.
 
 ### Évaluation
@@ -288,7 +291,7 @@ Plusieurs axes d'amélioration pourraient être explorés pour le faire évoluer
 * Prévoir des mécanismes de *fallback* en cas d'indisponibilité temporaire du modèle de langage.
 * Implémenter un système de cache pour les questions similaires.
 * Réduire la latence du pipeline en optimisant l’infrastructure d’exécution, notamment via des machines plus performantes ou des services d’inférence plus rapides.
-* Mettre en place un système de monitoring permettant de suivre les questions posées, les réponses générées, les performances, les temps d'exécution, les coûts et l'empreinte carbone.
+* Mettre en place un système de monitoring permettant de suivre les questions posées, les réponses générées, la qualité des réponses via un LLM-as-a-Judge, les temps d'exécution, les coûts et l'empreinte carbone.
 
 ### Fonctionnalités
 
