@@ -359,8 +359,8 @@ st.markdown(
     <div class="examples">
         <strong><u>Exemples :</u></strong>
         Quels types de problèmes rencontrent les clients avec le service client ?
-        • Comment les clients décrivent-ils leur expérience lors de l'ouverture d'un compte ?
         • Quels sont les éléments de satisfaction des clients concernant les frais bancaires ?
+        • Comment les clients décrivent-ils leur expérience lors de l'ouverture d'un compte ?
     </div>
     """,
     unsafe_allow_html=True,
